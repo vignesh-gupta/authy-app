@@ -1,6 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+html,body,:root{
+  height: 100%;
+}
  
 @layer base {
   :root {
@@ -72,5 +76,9 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+
+  .bg-custom-gradient{
+    @apply bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-sky-400 to-blue-800
   }
 }
