@@ -13,6 +13,9 @@ export const {
   session: { strategy: "jwt" },
   ...authConfig,
   callbacks: {
-    
-  }
+    jwt: async ({ token }) => {
+      console.log(token);
+      return token;
+    },
+  },
 });

@@ -40,8 +40,8 @@ const RegisterForm = () => {
 
     startTransition(() => {
       register(data).then((res) => {
-        setError(res.error);
-        setSuccess(res.success);
+        setError(res?.error);
+        setSuccess(res?.success);
       });
     });
   };
