@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useTransition } from "react";
 import CardWrapper from "./card-wrapper";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -16,8 +16,14 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import FormError from "../form-error";
+import FormSuccess from "../form-success";
+import { login } from "@/actions/login";
 
 const LoginForm = () => {
+  const [success, setSuccess] = useState<string | undefined>("");
+  const [error, setError] = useState<string | undefined>("");
+
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
@@ -26,9 +32,19 @@ const LoginForm = () => {
     },
   });
 
+  const [isPending, startTransition] = useTransition();
+
   const onSubmit = (data: z.infer<typeof LoginSchema>) => {
-    console.log(data);
-  }
+    setError("");
+    setSuccess("");
+
+    startTransition(() => {
+      login(data).then((res) => {
+        setError(res.error);
+        setSuccess(res.success);
+      });
+    });
+  };
 
   return (
     <CardWrapper
@@ -49,6 +65,7 @@ const LoginForm = () => {
                   <FormControl>
                     <Input
                       {...field}
+                      disabled={isPending}
                       placeholder="john.doe@example.com"
                       type="email"
                     />
@@ -66,6 +83,7 @@ const LoginForm = () => {
                   <FormControl>
                     <Input
                       {...field}
+                      disabled={isPending}
                       placeholder="******"
                       type="password"
                     />
@@ -75,7 +93,11 @@ const LoginForm = () => {
               )}
             />
           </div>
-          <Button type="submit" className="w-full">Login</Button>
+          <FormError message={error} />
+          <FormSuccess message={success} />
+          <Button type="submit" disabled={isPending} className="w-full">
+            Login
+          </Button>
         </form>
       </Form>
     </CardWrapper>
