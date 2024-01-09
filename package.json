@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "db:push": "prisma generate && prisma db push",
+    "db:reset": "prisma migrate reset --force && prisma generate && prisma db push",
     "db:studio": "prisma studio"
   },
   "dependencies": {

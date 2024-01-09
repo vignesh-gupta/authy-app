@@ -4,6 +4,15 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 const baseUrl = process.env.NEXT_URL || null;
 
+export const sendTwoFactorTokenMail = async (email: string, token: string) => {
+  await resend.emails.send({
+    from: "Authy-App <onboarding@resend.dev>",
+    to: email,
+    subject: "Your 2FA code",
+    html: `<p>Hi there,</p><p>Here is your 2FA code:</p><p>${token}</p>`,
+  });
+};
+
 export const sendPasswordResetEmail = async (email: string, token: string) => {
   const resetLink = `${baseUrl}/auth/reset?token=${token}`;
 

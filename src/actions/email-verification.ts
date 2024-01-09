@@ -26,5 +26,9 @@ export async function verifyEmail(token: string) {
     data: { emailVerified: new Date(), email: existingToken.email },
   });
 
+  await db.verificationToken.delete({
+    where: { id: existingToken.id },
+  });
+
   return { success: "Email Verified" };
 }
