@@ -1,7 +1,7 @@
-import NextAuth, { DefaultSession } from "next-auth";
 import authConfig from "@/auth.config";
-import { PrismaAdapter } from "@auth/prisma-adapter";
 import db, { UserRole } from "@/lib/db";
+import { PrismaAdapter } from "@auth/prisma-adapter";
+import NextAuth, { DefaultSession } from "next-auth";
 import { getUserById } from "./data/user";
 
 declare module "next-auth" {
@@ -21,6 +21,18 @@ export const {
   adapter: PrismaAdapter(db),
   session: { strategy: "jwt" },
   ...authConfig,
+  pages: {
+    signIn: "/auth/login",
+    error: "/auth/error",
+  },
+  events: {
+    linkAccount: async ({ user }) => {
+      await db.user.update({
+        where: { id: user.id },
+        data: { emailVerified: new Date() },
+      });
+    },
+  },
   callbacks: {
     jwt: async ({ token }) => {
       if (!token.sub) return token;
@@ -32,7 +44,6 @@ export const {
       return token;
     },
     session: async ({ session, token }) => {
-      console.log({ sessionToken: token });
       if (token.sub && session.user) {
         session.user.id = token.sub;
       }
@@ -42,14 +53,15 @@ export const {
       }
       return session;
     },
-    // signIn: async ({ user }) => {
-    //   const existingUser = await getUserById(user.id);
-      
-    //   if (!existingUser || !existingUser.emailVerified) {
-    //     return false;
-    //   }
-      
-    //   return true;
-    // }
+    signIn: async ({ user, account }) => {
+      // Allow OAuth Sign In without email verification
+      if (account?.provider !== "credentials") return true;
+
+      // Prevent sign in if email is not verified
+      const existingUser = await getUserById(user.id);
+      if (!existingUser || !existingUser.emailVerified) return false;
+
+      return true;
+    },
   },
 });
