@@ -20,3 +20,15 @@ export const RegisterSchema = zod.object({
     message: "Name is required",
   }),
 });
+
+export const ResetSchema = zod.object({
+  email: zod.string().email({
+    message: "Enter a valid email",
+  }),
+});
+
+export const PasswordSchema = zod.object({
+  password: zod.string().min(6, {
+    message: "Password should be at least 6 characters long",
+  }),
+});
