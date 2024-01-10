@@ -5,11 +5,14 @@ import NextAuth, { DefaultSession } from "next-auth";
 import { getUserById } from "./data/user";
 import { getTwoFactorConfirmationByUserId } from "./data/two-factor-confirmation";
 
+export type ExtendedUser = {
+  role: UserRole;
+  isTwoFactorEnabled: Boolean;
+} & DefaultSession["user"];
+
 declare module "next-auth" {
   interface Session {
-    user: {
-      role: UserRole;
-    } & DefaultSession["user"];
+    user: ExtendedUser;
   }
 }
 
@@ -42,6 +45,7 @@ export const {
       if (!user) return token;
 
       token.role = user.role;
+      token.isTwoFactorEnabled = user.isTwoFactorEnabled;
       return token;
     },
     session: async ({ session, token }) => {
@@ -51,6 +55,10 @@ export const {
 
       if (token.role && session.user) {
         session.user.role = token.role as UserRole;
+      }
+
+      if (token.isTwoFactorEnabled && session.user) {
+        session.user.isTwoFactorEnabled = token.isTwoFactorEnabled as Boolean;
       }
       return session;
     },
