@@ -21,7 +21,7 @@ export const authRoutes = [
  * Routes that start with this prefix are used for authentication purpose.
  * @type {string}
  */
-export const apiAuthPublic = "/api/auth";
+export const apiAuthPrefix = "/api/auth";
 
 /**
  * The default redirect URL after login.
