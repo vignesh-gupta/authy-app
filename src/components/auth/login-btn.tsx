@@ -17,7 +17,6 @@ const LoginButton = ({
   const router = useRouter();
 
   const handleClick = () => {
-    console.log("Login Button Clicked");
     router.push("/auth/login");
   };
 
